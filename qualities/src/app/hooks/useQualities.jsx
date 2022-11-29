@@ -30,7 +30,7 @@ export const QualitiesProvider = ({ children }) => {
     return qualities.find((q) => q._id === id);
   };
 
-  const updateQuality = async ({_id: id, ...data}) => {
+  const updateQuality = async ({ _id: id, ...data }) => {
     try {
       const { content } = await qualityService.update(id, data);
       setQualities((prev) =>
@@ -48,8 +48,18 @@ export const QualitiesProvider = ({ children }) => {
     }
   };
 
+  const addQuality = async (data) => {
+    try {
+      const { content } = await qualityService.create(data);
+      setQualities((prev) => [...prev, content]);
+    } catch (e) {
+      const { message } = e.response.data;
+      setError(message);
+    }
+  };
+
   return (
-    <QualitiesContext.Provider value={{ qualities, getQuality, updateQuality }}>
+    <QualitiesContext.Provider value={{ qualities, getQuality, updateQuality, addQuality }}>
       {!isLoading ? children : <h2>Qualities Loading...</h2>}
     </QualitiesContext.Provider>
   );

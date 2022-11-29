@@ -10,7 +10,7 @@ const EditQualityPage = () => {
   const { id } = useParams();
   const {getQuality, updateQuality} = useQualities();
   const quality = getQuality(id);
-  console.log(quality);
+  // console.log(quality);
 
 
   const handleSubmit = (data) => {

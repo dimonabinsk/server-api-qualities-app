@@ -40,6 +40,10 @@ const qualityService = {
     const { data } = await httpServices.get(qualityEndPoint);
     return data;
   },
+  create: async (content) => {
+    const {data} = await httpServices.post(qualityEndPoint, content);
+    return data;
+  }
 };
 
 export default qualityService;
