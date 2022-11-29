@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import qualityService from "../services/quality.services";
 
 const QualitiesContext = React.createContext();
@@ -9,9 +10,9 @@ export const useQualities = () => {
 
 export const QualitiesProvider = ({ children }) => {
   const [qualities, setQualities] = useState();
-  const [, setError] = useState(null);
+  const [error, setError] = useState(null);
   const [isLoading, setLoading] = useState(true);
-  const prevStateQuality = useRef();
+  // const prevStateQuality = useRef();
   useEffect(() => {
     const getQualities = async () => {
       try {
@@ -19,8 +20,7 @@ export const QualitiesProvider = ({ children }) => {
         setQualities(content);
         setLoading(false);
       } catch (e) {
-        const { message } = e.response.data;
-        setError(message);
+        errorCather(e);
       }
     };
 
@@ -44,37 +44,58 @@ export const QualitiesProvider = ({ children }) => {
       );
       return content;
     } catch (e) {
-      const { message } = e.response.data;
-      setError(message);
+      errorCather(e);
     }
   };
 
   const addQuality = async (data) => {
-    // пессимистичный метод добавления
     try {
       const { content } = await qualityService.create(data);
       setQualities((prev) => [...prev, content]);
       return content;
     } catch (e) {
-      const { message } = e.response.data;
-      setError(message);
+      errorCather(e);
     }
   };
 
+  // const deleteQuality = async (id) => {
+  //   // оптимистичный метод удаления
+  //   prevStateQuality.current = qualities;
+  //   setQualities((prev) => {
+  //     return prev.filter((item) => item._id !== id);
+  //   });
+  //   try {
+  //     await qualityService.delete(id);
+  //   } catch (e) {
+  //     const { message } = e.response.data;
+  //     setError(message);
+  //     setQualities(prevStateQuality.current);
+  //   }
+  // };
+
   const deleteQuality = async (id) => {
-    // оптимистичный метод удаления
-    prevStateQuality.current = qualities;
-    setQualities((prev) => {
-      return prev.filter((item) => item._id !== id);
-    });
+    // пессимистичный метод добавления
     try {
-      await qualityService.delete(id);
+      const { content } = await qualityService.delete(id);
+      setQualities((prev) => {
+        return prev.filter((item) => item._id !== content._id);
+      });
     } catch (e) {
-      const { message } = e.response.data;
-      setError(message);
-      setQualities(prevStateQuality.current);
+      errorCather(e);
     }
   };
+
+  function errorCather(error) {
+    const { message } = error.response.data;
+    setError(message);
+  }
+
+  useEffect(() => {
+    if (error !== null) {
+      toast.error(error);
+      setError(null);
+    }
+  }, [error]);
 
   return (
     <QualitiesContext.Provider
