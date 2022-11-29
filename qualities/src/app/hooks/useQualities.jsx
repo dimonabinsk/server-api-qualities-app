@@ -52,6 +52,7 @@ export const QualitiesProvider = ({ children }) => {
     try {
       const { content } = await qualityService.create(data);
       setQualities((prev) => [...prev, content]);
+      return content;
     } catch (e) {
       const { message } = e.response.data;
       setError(message);

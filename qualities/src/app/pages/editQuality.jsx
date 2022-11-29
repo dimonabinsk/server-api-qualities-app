@@ -1,20 +1,20 @@
 import React from "react";
-import { useParams } from "react-router-dom";
-
+import { useHistory, useParams } from "react-router-dom";
 
 import QualityForm from "../components/ui/qualityForm";
 import { useQualities } from "../hooks/useQualities";
 
-
 const EditQualityPage = () => {
+  const history = useHistory();
   const { id } = useParams();
-  const {getQuality, updateQuality} = useQualities();
+  const { getQuality, updateQuality } = useQualities();
   const quality = getQuality(id);
   // console.log(quality);
 
-
   const handleSubmit = (data) => {
-    updateQuality(data);
+    updateQuality(data).then((data) => {
+      if (data) history.push("/");
+    });
   };
 
   return (
